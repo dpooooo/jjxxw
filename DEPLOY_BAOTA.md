@@ -76,15 +76,32 @@ CORS_ORIGIN="http://你的域名"
 
 ## 6. 初始化数据库
 
-执行 Prisma 迁移和种子数据：
+宝塔创建的数据库用户通常只有当前数据库权限，没有创建 shadow database 的权限。
+因此服务器生产环境不要执行 `prisma migrate dev`，否则可能报 `P3014`。
+
+首次部署直接把 Prisma schema 同步到当前数据库：
 
 ```bash
 npm run prisma:generate --workspace backend
-npm run prisma:migrate --workspace backend
+npm run prisma:push --workspace backend
 npm run prisma:seed --workspace backend
 ```
 
 如果数据库已有正式数据，更新代码时不要随意重复执行 seed。
+
+如果后续项目开始提交 `backend/prisma/migrations` 目录里的正式迁移文件，生产环境再改用：
+
+```bash
+npm run prisma:deploy --workspace backend
+```
+
+不要在宝塔生产环境运行：
+
+```bash
+npm run prisma:migrate --workspace backend
+```
+
+`prisma:migrate` 只适合本地开发环境。
 
 ## 7. 构建前端
 
@@ -184,7 +201,13 @@ pm2 restart jjxxw-api
 如果 Prisma schema 有数据库结构变更，再执行：
 
 ```bash
-npm run prisma:migrate --workspace backend
+npm run prisma:push --workspace backend
+```
+
+如果已经改为正式 migration 流程，则改用：
+
+```bash
+npm run prisma:deploy --workspace backend
 ```
 
 ## 12. 常见检查

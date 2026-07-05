@@ -23,6 +23,12 @@ npm run prisma:migrate --workspace backend
 npm run prisma:seed --workspace backend
 ```
 
+宝塔/生产服务器不要执行 `prisma:migrate`，请按部署文档使用：
+
+```bash
+npm run prisma:push --workspace backend
+```
+
 前端默认地址：`http://127.0.0.1:5173`
 
 后端默认地址：`http://127.0.0.1:4000`
