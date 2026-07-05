@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String
+  description String?
+  sortOrder   Int      @default(0)
+  posts       Post[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Region {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  posts     Post[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  summary     String?    @db.VarChar(500)
+  content     String     @db.Text
+  status      PostStatus @default(PENDING)
+  label       String?
+  contactName String
+  phone       String
+  password    String?
+  views       Int        @default(0)
+  pinned      Boolean    @default(false)
+  expiresAt   DateTime?
+  categoryId  Int
+  regionId    Int
+  category    Category   @relation(fields: [categoryId], references: [id])
+  region      Region     @relation(fields: [regionId], references: [id])
+  images      PostImage[]
+  auditLogs   PostAuditLog[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([categoryId, status, pinned])
+  @@index([regionId])
+  @@index([createdAt])
+}
+
+model PostImage {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  url       String
+  sortOrder Int      @default(0)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ad {
+  id        Int      @id @default(autoincrement())
+  title     String
+  url       String?
+  imageUrl  String?
+  position  String
+  active    Boolean  @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  role         UserRole @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PostAuditLog {
+  id        Int        @id @default(autoincrement())
+  postId    Int
+  action    AuditAction
+  note      String?
+  post      Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+}
+
+enum PostStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum AuditAction {
+  CREATE
+  APPROVE
+  REJECT
+  PIN
+  UNPIN
+  DELETE
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
