@@ -5,10 +5,14 @@
         <h1 class="font-serif text-3xl font-bold text-ink">后台管理</h1>
         <p class="mt-2 text-sm text-muted">管理信息审核、发布、分类、区域和公告。</p>
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <button v-for="tab in tabs" :key="tab.value" :class="['rounded-md px-3 py-2 text-sm font-medium transition', activeTab === tab.value ? 'bg-ink text-white dark:bg-brand' : 'border border-line bg-surface text-muted hover:text-ink']" @click="activeTab = tab.value">
           {{ tab.label }}
         </button>
+        <div class="ml-auto flex items-center gap-2 border-l border-line pl-3">
+          <span class="text-sm text-muted">{{ user?.username }}</span>
+          <button class="admin-btn" @click="handleLogout">退出登录</button>
+        </div>
       </div>
     </div>
 
@@ -138,11 +142,21 @@
 
 <script setup>
 import { computed, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import { categories, posts, regions } from "../data/mock";
 import SimpleTable from "../components/SimpleTable.vue";
 import { toneClass, auditClass } from "../data/badges";
 import BaseButton from "../components/ui/BaseButton.vue";
 import EmptyState from "../components/ui/EmptyState.vue";
+import { useAuth } from "../composables/useAuth.js";
+
+const router = useRouter();
+const { user, logout } = useAuth();
+
+async function handleLogout() {
+  await logout();
+  router.push("/login");
+}
 
 const tabs = [
   { label: "信息管理", value: "posts" },

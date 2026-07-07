@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -15,6 +16,16 @@ const categories = [
 const regions = ["浔阳区", "濂溪区", "柴桑区", "开发区", "八里湖新区", "瑞昌", "湖口", "修水", "都昌", "共青城"];
 
 async function main() {
+  await prisma.user.upsert({
+    where: { username: "admin" },
+    update: {},
+    create: {
+      username: "admin",
+      passwordHash: await bcrypt.hash("admin123", 10),
+      role: "ADMIN"
+    }
+  });
+
   for (const [index, [slug, name, description]] of categories.entries()) {
     await prisma.category.upsert({
       where: { slug },

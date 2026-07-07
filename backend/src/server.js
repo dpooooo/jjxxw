@@ -2,8 +2,12 @@
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
+import { requireAuth } from "./middleware/auth.js";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -12,6 +16,7 @@ const port = Number(process.env.PORT || 4000);
 app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN || "http://127.0.0.1:5173" }));
 app.use(express.json({ limit: "2mb" }));
+app.use(cookieParser());
 
 const idParam = z.object({ id: z.coerce.number().int().positive() });
 
@@ -50,6 +55,45 @@ const articleSchema = z.object({
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, name: "九江信息网 API" });
 });
+
+app.post("/api/auth/login", async (req, res, next) => {
+  try {
+    const { username, password } = z.object({
+      username: z.string().min(1),
+      password: z.string().min(1)
+    }).parse(req.body);
+    const user = await prisma.user.findUnique({ where: { username } });
+    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+      return res.status(401).json({ error: "用户名或密码错误" });
+    }
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    res.json({ username: user.username, role: user.role });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/api/auth/logout", (_req, res) => {
+  res.clearCookie("token");
+  res.json({ ok: true });
+});
+
+app.get("/api/auth/me", requireAuth, (req, res) => {
+  res.json({ username: req.user.username, role: req.user.role });
+});
+
+// 保护所有 /api/admin/* 路由
+app.use("/api/admin", requireAuth);
 
 app.get("/api/categories", async (_req, res, next) => {
   try {
