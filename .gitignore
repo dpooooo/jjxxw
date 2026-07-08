@@ -4,6 +4,7 @@ backend/.env
 .env
 .agents/
 .codex/
+test-results/
 
 *.log
 npm-debug.log*

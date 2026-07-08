@@ -6,7 +6,7 @@
 
 <script setup>
 import { computed } from "vue";
-import { statusClass } from "../../data/badges";
+import { statusClass } from "../../data/badgesClean";
 
 const props = defineProps({
   status: { type: String, required: true },

@@ -65,6 +65,60 @@ textarea {
   color: rgb(var(--color-ink));
 }
 
+.region-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: rgb(var(--color-muted));
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.region-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+.region-nav .region-link {
+  width: 100%;
+  min-height: 40px;
+}
+
+.region-link:hover {
+  background: rgb(var(--color-ink) / 0.06);
+  color: rgb(var(--color-ink));
+}
+
+.region-panel > h2 {
+  display: none;
+}
+
+.region-link-active {
+  background: rgb(var(--color-ink) / 0.08);
+  color: rgb(var(--color-ink));
+}
+
+.region-count {
+  min-width: 22px;
+  border-radius: 999px;
+  background: rgb(var(--color-ink) / 0.08);
+  padding: 2px 6px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+@media (max-width: 640px) {
+  .region-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .footer-link {
   width: fit-content;
   transition: color 0.2s ease;

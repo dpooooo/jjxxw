@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { toneClass } from "../data/badges";
+import { toneClass } from "../data/badgesClean";
 import StatusBadge from "./ui/StatusBadge.vue";
 
 defineProps({

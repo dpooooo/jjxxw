@@ -143,9 +143,9 @@
 <script setup>
 import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { categories, posts, regions } from "../data/mock";
+import { categories, posts, regions } from "../data/mockClean";
 import SimpleTable from "../components/SimpleTable.vue";
-import { toneClass, auditClass } from "../data/badges";
+import { toneClass, auditClass } from "../data/badgesClean";
 import BaseButton from "../components/ui/BaseButton.vue";
 import EmptyState from "../components/ui/EmptyState.vue";
 import { useAuth } from "../composables/useAuth.js";

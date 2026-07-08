@@ -48,7 +48,7 @@
 <script setup>
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { getCategory, getPost } from "../data/mock";
+import { getCategory, getPost } from "../data/mockClean";
 import StatusBadge from "../components/ui/StatusBadge.vue";
 
 const route = useRoute();

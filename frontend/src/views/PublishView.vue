@@ -62,7 +62,7 @@
 
 <script setup>
 import { reactive, ref } from "vue";
-import { categories, regions } from "../data/mock";
+import { categories, regions } from "../data/mockClean";
 import BaseButton from "../components/ui/BaseButton.vue";
 
 const submitted = ref(false);
